@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Tic Tac Toe</title>
+    <style>
+        body { background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', sans-serif; color: white; margin: 0; }
+        .card { background: rgba(30, 41, 59, 0.9); padding: 40px; border-radius: 20px; text-align: center; width: 350px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: #10b981; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; box-sizing: border-box; font-size: 16px; }
+        input:focus { border-color: #10b981; outline: none; }
+        button { width: 100%; padding: 12px; background: #10b981; border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #059669; transform: translateY(-2px); }
+        p { margin-top: 20px; font-size: 14px; color: #94a3b8; }
+        a { color: #10b981; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔐 Login</h1>
+        <form action="/api/auth/login" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Enter Lobby</button>
+        </form>
+        <p>New player? <a href="/signup.html">Sign Up</a></p>
+    </div>
+</body>
+</html>

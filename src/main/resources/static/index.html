@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe | Game Lobby</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* --- NEW PROFESSIONAL STATS SECTION (LEFT OF PROFILE) --- */
+        .stats-group {
+            display: flex;
+            gap: 12px;
+            margin-right: 15px;
+        }
+        .stat-card {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 5px 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 85px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .stat-label { 
+            font-size: 9px; 
+            color: #94a3b8; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+        .stat-val { font-size: 16px; font-weight: bold; }
+        .val-rank { color: #3b82f6; } /* Professional Blue */
+        .val-wins { color: #10b981; } /* Professional Green */
+
+        /* --- PROFESSIONAL PROFILE SECTION (UNTOUCHED) --- */
+        .user-profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            user-select: none;
+            transition: 0.3s;
+        }
+
+        .user-profile:hover {
+            background: rgba(51, 65, 85, 1);
+        }
+
+        .profile-icon {
+            width: 28px;
+            height: 28px;
+            fill: #3b82f6;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .username-display {
+            font-weight: bold;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        /* --- HIDDEN LOGOUT DROPDOWN --- */
+        .logout-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 100;
+            min-width: 120px;
+            overflow: hidden;
+        }
+
+        .logout-dropdown.show {
+            display: block;
+        }
+
+        .logout-item {
+            padding: 12px;
+            color: #ef4444;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .logout-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .current-user-row {
+            border: 1px solid #3b82f6 !important;
+        }
+    </style>
+</head>
+<body>
+
+<header class="top-bar" style="display: flex; align-items: center; justify-content: flex-end; padding: 10px 40px;">
+    <div class="auth" id="auth-section" style="display: flex; align-items: center;">
+        <button class="auth-btn" onclick="location.href='/signup.html'">Create Account</button>
+        <button class="auth-btn login" onclick="location.href='/login.html'">Login</button>
+    </div>
+</header>
+
+<div class="layout">
+    <aside class="leaderboard">
+        <h2>🏆 Global Leaderboard</h2>
+        <div class="top3" id="top3-container"></div>
+        <ul class="top10" id="top10-list"></ul>
+    </aside>
+
+    <section class="right-panel">
+        <div class="logo-area">
+            <h1>🎮 Tic Tac Toe</h1>
+            <p>Think Smart. Play Fast. Win Big.</p>
+        </div>
+
+        <div class="game-modes">
+            <button class="mode-btn" onclick="selectFriend()">👥 Play with Friend</button>
+            <button class="mode-btn ai" onclick="selectComputer()">🤖 Play with Computer</button>
+        </div>
+
+        <div id="playersBox" style="display: none;">
+            <input type="text" id="playerX" placeholder="Player X Name">
+            <input type="text" id="playerO" placeholder="Player O Name">
+            <button class="start" onclick="startGame()">Start Game</button>
+        </div>
+    </section>
+</div>
+
+<footer class="footer">
+    Designed & Developed by Rohan Naik 🚀
+</footer>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const userFromUrl = urlParams.get('user');
+    if (userFromUrl) localStorage.setItem("username", userFromUrl);
+
+    const loggedInUser = localStorage.getItem("username");
+
+    // Click-to-Show Profile Header with Stats Cards
+    if (loggedInUser) {
+        document.getElementById("auth-section").innerHTML = `
+            <div class="stats-group">
+                <div class="stat-card">
+                    <span class="stat-label">Global Rank</span>
+                    <span class="stat-val val-rank" id="header-rank">#--</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Wins</span>
+                    <span class="stat-val val-wins" id="header-wins">--</span>
+                </div>
+            </div>
+            <div class="user-profile" onclick="toggleLogout(event)">
+                <svg class="profile-icon" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span class="username-display">${loggedInUser}</span>
+                <div class="logout-dropdown" id="logoutMenu">
+                    <div class="logout-item" onclick="logout()">LOGOUT</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function toggleLogout(event) {
+        event.stopPropagation();
+        const menu = document.getElementById("logoutMenu");
+        menu.classList.toggle("show");
+    }
+
+    window.onclick = function() {
+        const menu = document.getElementById("logoutMenu");
+        if (menu && menu.classList.contains("show")) {
+            menu.classList.remove("show");
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("username");
+        window.location.href = "index.html";
+    }
+
+    window.onload = function() {
+        fetch('/api/leaderboard')
+            .then(res => res.json())
+            .then(data => {
+                // Update the Header Stats Cards after login
+                if (loggedInUser) {
+                    const idx = data.findIndex(p => p.username === loggedInUser);
+                    if (idx !== -1) {
+                        document.getElementById("header-wins").textContent = data[idx].wins;
+                        document.getElementById("header-rank").textContent = "#" + (idx + 1);
+                    }
+                }
+
+                const top3Container = document.getElementById('top3-container');
+                const top10List = document.getElementById('top10-list');
+                
+                top3Container.innerHTML = data.slice(0, 3).map((p, i) => `
+                    <div class="player ${i==0?'gold':i==1?'silver':'bronze'} ${p.username === loggedInUser ? 'current-user-row' : ''}">
+                        <div class="icon">${i==0?'🥇':i==1?'🥈':'🥉'}</div>
+                        <h3>${p.username}</h3>
+                        <p>${p.wins} Wins</p>
+                    </div>`).join('');
+
+                top10List.innerHTML = data.slice(3, 10).map((p, i) => `
+                    <li class="${p.username === loggedInUser ? 'current-user-row' : ''}">
+                        <span class="rank">${i + 4}</span>
+                        <span class="name">${p.username}</span>
+                        <span class="wins">${p.wins} Wins</span>
+                    </li>`).join('');
+            });
+    };
+
+    function selectFriend() { document.getElementById("playersBox").style.display = "flex"; document.getElementById("playerX").value = loggedInUser || ""; }
+    function selectComputer() { document.getElementById("playersBox").style.display = "flex"; document.getElementById("playerO").value = "Computer"; document.getElementById("playerX").value = loggedInUser || ""; }
+    function startGame() {
+        localStorage.setItem("playerX", document.getElementById("playerX").value || "Player X");
+        localStorage.setItem("playerO", document.getElementById("playerO").value || "Player O");
+        window.location.href = "sindex.html"; 
+    }
+</script>
+
+</body>
+</html>
